@@ -1,159 +1,120 @@
-#include <iostream> 
-#include <fstream> 
-#include <string> 
-#include <vector> 
-#include <iterator> 
-#include <algorithm> 
-#include <queue> 
-#include <memory>
-
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
 using namespace std;
 
-struct person {
-	string surname, name;
-	short age;
+struct man
+{
+	string name;
+	string surname;
+	short year;
 	size_t size() const
 	{
-		return (surname.capacity()+name.capacity()+ sizeof(age)+2*sizeof(" "));
+		size_t string_obj_size = sizeof(string);
+		return string_obj_size * 2 + name.size() + surname.size() + sizeof(short);
 	}
 };
 
-bool operator <(const person& s1, const person& s2)
+bool operator < (const man & m1, const man & m2)
 {
-	return (s1.name < s2.name);
+	return (m1.name < m2.name);
 }
 
-bool operator >(const person& s1, const person& s2)
+bool operator >(const man & m1, const man & m2)
 {
-	return (s1.name > s2.name);
+	return (m1.name > m2.name);
 }
 
-istream & operator >> (istream & in, person & s)
+ostream & operator<<(ostream & output, man const & m)
 {
-	in >> s.surname >> s.name >> s.age;
-	return in;
-}
-ostream & operator<<(ostream & out, person const & s)
-{
-	out << s.surname << " " << s.name << " "  << s.age<<"\n";
-	return out;
+	output << m.surname << " " << m.name << " " << m.year;
+	return output;
 }
 
+istream & operator>>(istream & input, man & m)
+{
+	input >> m.surname >> m.name >> m.year;
+	return input;
+}
 
+bool operator != (const man& m, const string& str)
+{
+	return (m.surname != str);
+}
 
-struct A {
-public:
+struct file_man
+{
+	man data;
 	ifstream *f;
-	person s;
-	A(const person& s_, ifstream* f_) : s(s_), f(f_) {}
+	file_man(const man& m_, ifstream* f_) : data(m_), f(f_){}
 };
 
-bool operator < (const A& s1, const A& s2)// оператор для структуры А 
+bool operator < (const file_man& mf1, const file_man& mf2)
 {
-	return (s1.s > s2.s);
+	return (mf1.data > mf2.data);
 }
 
-
-class B {
-public:
-	B(string name_main_file, string out_file, size_t buff_size);
-	auto division()->void;
-	auto make_file(string name_file)->void;
-	auto file_sort()->void;
-	~B();
-private:
-	string s_out, s_in;
-	size_t count_of_files;
-	vector<string> file_names;
-	vector<person> pers;
-	uint_fast64_t buffer;
-};
+void sorting(const string& input_name, const string& output_name, const size_t file_size)
+{
 
 
-
-inline B::~B() {
-	//file_names.clear();
-	//file_names.shrink_to_fit();
-	//pers.shrink_to_fit();
-}
-
-inline B::B(string name_main_file, string out_file, size_t buff_size) :s_in(name_main_file), s_out(out_file), count_of_files(0), buffer(buff_size * 1024 * 1024*0.9) {
-	pers.reserve(buffer);
-	file_names.reserve(512);
-	division();
-};
-
-inline auto B::make_file(string name_file)->void {
-	file_names.push_back(name_file);
-	std::sort(pers.begin(), pers.end()/*, [&](person &A, person &B) {return A.name < B.name;}*/);
-	ofstream temp(name_file, ios::binary);
-	for (auto i : pers) if (i.surname != "") temp << i ;
-	temp.close();
-	pers.clear();
-}
-
-
-
-
-
-inline auto B::file_sort()->void {
-	priority_queue<A> end_sorting;
-
-	for (int i = 0; i < count_of_files; ++i) {
-		ifstream* f_ = new ifstream(file_names[i], ios::binary);
-		person temp_s;
-		*f_ >> temp_s;
-		A ff(temp_s, f_);
-		end_sorting.push(ff);
-	}
-
-	ofstream f12(s_out, ios::binary);
-	while (!end_sorting.empty()) {
-		A ff = end_sorting.top();
-		end_sorting.pop();
-		if (ff.s.surname != "") f12 << ff.s << endl;
-
-		if (!(*ff.f).eof())
+	ifstream fin(input_name, ios::binary);
+	if (!fin.is_open()) throw("file_not_open");
+	ofstream fout(output_name, ios::binary);
+	size_t n = 0;
+	const size_t buffer_size = file_size * 1024 * 1024 * 0.6;
+	while (!fin.eof())
+	{
+		vector<man> v; 
+		man m;
+		ofstream fout_(to_string(n + 1), ios::binary);
+		unsigned long int size = 0;
+		while ((size + 50) < buffer_size)
 		{
-			*ff.f >> ff.s;
-			end_sorting.push(ff);
+			if ((fin >> m) && (m != ""))  v.push_back(m);
+			size += m.size();
 		}
-		else {
-			(*(ff.f)).close();
+		sort(v.begin(), v.end());
+		for (auto i : v)
+		{
+			fout_ << i << endl;
+		}
+		++n;
+		fout_.close();
+	}
+	fin.close();
+
+
+	priority_queue<file_man> q;
+	for (size_t i = 0; i < n; ++i)
+	{
+		ifstream* f_ = new ifstream(to_string(i + 1), ios::binary);
+		man push_man;
+		*f_ >> push_man;
+		file_man fm(push_man, f_);
+		q.push(fm);
+	}
+	while (!q.empty())
+	{
+		file_man mf_ = q.top();
+		q.pop();
+		fout << mf_.data << endl;
+		if (!(*mf_.f).eof())
+		{
+			*mf_.f >> mf_.data;
+			q.push(mf_);
+		}
+		else
+		{
+			(*(mf_.f)).close();
 		}
 	}
-	f12.close();
-
-
-	for (int i = 0; i < file_names.size(); ++i) {
-		remove(file_names[i].c_str());
+	for (size_t i = 0; i < n; ++i)
+	{
+		remove((to_string(i + 1)).c_str());
 	}
-
-}
-
-
-
-inline auto B::division()->void {
-	size_t i(0);
-	person chel;
-	ifstream file(s_in, ios::binary);
-	while (!file.eof()) {
-		file >> chel;
-		i += chel.size();
-		if (i<buffer) {
-			pers.push_back(chel);
-		}else {
-			count_of_files++;
-			make_file(to_string(count_of_files));
-			pers.push_back(chel);
-			i = chel.size();
-		}
-	}
-	file.close();
-	if (!pers.empty()) {
-		count_of_files++;
-		make_file(to_string(count_of_files));
-	}
-	file_sort();
+	fout.close();
 }
