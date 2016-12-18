@@ -4,72 +4,32 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
- 
-SCENARIO("8mb", "[8mb]")
-{
- sorting ("8mb", "out_8", 1);
-  bool x = true;
-  std::ifstream f1("out_8"), f2("out8");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>m1)&&(f2>>m2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
-}
-
-SCENARIO("15mb", "[15mb]")
-{
-  sorting ("15mb", "out_15", 4);
-  bool x = true;
-  std::ifstream f1("out_15"), f2("out15");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>m1)&&(f2>>m2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
-}
 
 SCENARIO("32mb", "[32mb]")
 {
-  sorting ("32mb", "out_32", 17);
-  bool x = true;
-  std::ifstream f1("out_32"), f2("out32");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>m1)&&(f2>>m2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("32mb", "out_32", 17);
+	end = std::chrono::system_clock::now();
+	cout <<"32MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
+}
+SCENARIO("15mb", "[15mb]")
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("15mb", "out_15", 4);
+	end = std::chrono::system_clock::now();
+	cout <<"15MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
+}
+
+SCENARIO("8mb", "[8mb]")
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("8mb", "out_8", 1);
+	end = std::chrono::system_clock::now();
+	cout <<"8MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
 }
