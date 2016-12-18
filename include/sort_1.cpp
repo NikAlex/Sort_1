@@ -8,113 +8,106 @@
 
 using namespace std;
 
-struct man
+struct stroka
 {
 	string name;
 	string surname;
 	short year;
 	size_t size() const
 	{
-		size_t string_obj_size = sizeof(string);
-		return string_obj_size * 2 + name.size() + surname.size() + sizeof(short);
+		size_t sz = sizeof(string);
+		return (sz + name.size() + sz + surname.size() + sizeof(short));
 	}
 };
 
-bool operator < (const man & m1, const man & m2)
+bool operator < (const stroka & s1, const stroka& s2)
 {
-	return (m1.name < m2.name);
+	return (s1.name < s2.name);
 }
 
-bool operator >(const man & m1, const man & m2)
+bool operator >(const stroka & s1, const stroka& s2)
 {
-	return (m1.name > m2.name);
+	return (s1.name > s2.name);
 }
 
-ostream & operator<<(ostream & output, man const & m)
+ostream & operator<<(ostream & output, stroka const & str)
 {
-	output << m.surname << " " << m.name << " " << m.year;
+	output << str.surname << " " << str.name << " " << str.year;
 	return output;
 }
 
-istream & operator>>(istream & input, man & m)
+istream & operator>>(istream & input, stroka & str)
 {
-	input >> m.surname >> m.name >> m.year;
+	input >> str.surname >> str.name >> str.year;
 	return input;
 }
 
-bool operator != (const man& m, const string& str)
+bool operator != (const stroka& s, const string& str)
 {
-	return (m.surname != str);
+	return (s.surname != str);
 }
 
-struct file_man
+struct s_i
 {
-	man data;
+	stroka s;
 	ifstream *f;
-	file_man(const man& m_, ifstream* f_) : data(m_), f(f_){}
+	s_i(const stroka& s_, ifstream* f_) : s(s_), f(f_){}
 };
 
-bool operator < (const file_man& mf1, const file_man& mf2)
+bool operator < (const s_i& s_i1, const s_i& s_i2)
 {
-	return (mf1.data > mf2.data);
+	return (s_i1.s > s_i2.s);
 }
 
-void sorting(const string& input_name, const string& output_name, const size_t file_size)
+void sort_it(const string input_name, const string output_name, const short mem_size)
 {
-
-
 	ifstream fin(input_name, ios::binary);
 	if (!fin.is_open()) throw("file_not_open");
 	ofstream fout(output_name, ios::binary);
-	size_t n = 0;
-	const size_t buffer_size = file_size * 1024 * 1024 * 0.6;
+	short k = 0;
+	const size_t ms = mem_size * 1024 * 1024 * 0.63;
 	while (!fin.eof())
 	{
-		vector<man> v; 
-		man m;
-		ofstream fout_(to_string(n + 1), ios::binary);
-		unsigned long int size = 0;
-		while ((size + 50) < buffer_size)
+		vector<stroka> v; stroka s;
+		ofstream fout_(to_string(k + 1), ios::binary);
+		for (unsigned long int size = 0; (size + 50) < ms;)
 		{
-			if ((fin >> m) && (m != ""))  v.push_back(m);
-			size += m.size();
+			if (!fin.eof() && (fin >> s) && (s != ""))  v.push_back(s);
+			size += s.size();
 		}
 		sort(v.begin(), v.end());
 		for (auto i : v)
 		{
-			fout_ << i << endl;
+			if (i != "") fout_ << i << endl;
 		}
-		++n;
+		++k;
 		fout_.close();
 	}
 	fin.close();
-
-
-	priority_queue<file_man> q;
-	for (size_t i = 0; i < n; ++i)
+	priority_queue<s_i> pq;
+	for (size_t i = 0; i < k; ++i)
 	{
 		ifstream* f_ = new ifstream(to_string(i + 1), ios::binary);
-		man push_man;
-		*f_ >> push_man;
-		file_man fm(push_man, f_);
-		q.push(fm);
+		stroka str;
+		*f_ >> str;
+		s_i si(str, f_);
+		pq.push(si);
 	}
-	while (!q.empty())
+	while (!pq.empty())
 	{
-		file_man mf_ = q.top();
-		q.pop();
-		fout << mf_.data << endl;
-		if (!(*mf_.f).eof())
+		s_i si = pq.top();
+		pq.pop();
+		if (si.s != "") fout << si.s << endl;
+		if (!(*si.f).eof() && (*si.f >> si.s))
 		{
-			*mf_.f >> mf_.data;
-			q.push(mf_);
+			pq.push(si);
 		}
 		else
 		{
-			(*(mf_.f)).close();
+			(*(si.f)).close();
 		}
 	}
-	for (size_t i = 0; i < n; ++i)
+	for (size_t i = 0; i < k; ++i)
 	{
 		remove((to_string(i + 1)).c_str());
 	}
