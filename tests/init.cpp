@@ -11,7 +11,7 @@ SCENARIO("32mb", "[32mb]")
 	start = std::chrono::system_clock::now();
 	sort_it("32mb", "out_32", 17);
 	end = std::chrono::system_clock::now();
-	cout <<"32MB- " <<(end - start).count()*1000000 <<" ms"<< endl;
+	cout <<"32MB- " <<(end - start).count()/1000000 <<" ms"<< endl;
   REQUIRE(1);
 }
 SCENARIO("15mb", "[15mb]")
@@ -20,7 +20,7 @@ SCENARIO("15mb", "[15mb]")
 	start = std::chrono::system_clock::now();
 	sort_it("15mb", "out_15", 4);
 	end = std::chrono::system_clock::now();
-	cout <<"15MB- " <<(end - start).count()*1000000 <<" ms"<< endl;
+	cout <<"15MB- " <<(end - start).count()/1000000 <<" ms"<< endl;
   REQUIRE(1);
 }
 
@@ -30,6 +30,6 @@ SCENARIO("8mb", "[8mb]")
 	start = std::chrono::system_clock::now();
 	sort_it("8mb", "out_8", 1);
 	end = std::chrono::system_clock::now();
-	cout <<"8MB- " <<(end - start).count()*1000000 <<" ms"<< endl;
+	cout <<"8MB- " <<(end - start).count()/1000000 <<" ms"<< endl;
   REQUIRE(1);
 }
