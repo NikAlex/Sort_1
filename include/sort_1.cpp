@@ -4,6 +4,37 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <chrono>
+using namespace std;
+
+SCENARIO("32mb", "[32mb]")
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("32mb", "out_32", 17);
+	end = std::chrono::system_clock::now();
+	cout <<"32MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
+}
+SCENARIO("15mb", "[15mb]")
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("15mb", "out_15", 4);
+	end = std::chrono::system_clock::now();
+	cout <<"15MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
+}
+
+SCENARIO("8mb", "[8mb]")
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	sort_by_TAHK("8mb", "out_8", 1);
+	end = std::chrono::system_clock::now();
+	cout <<"8MB- " <<(end - start).count() <<" nanoseconds"<< endl;
+  REQUIRE(1);
+}
 using namespace std;
 
 struct man
