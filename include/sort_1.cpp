@@ -65,7 +65,7 @@ void sort_it(const string input_name, const string output_name, const short mem_
 	if (!fin.is_open()) throw("file_not_open");
 	ofstream fout(output_name, ios::binary);
 	short k = 0;
-	const size_t ms = mem_size * 1024 * 1024 * 0.63;
+	const size_t ms = mem_size * 1024 * 1024 * 0.6;
 	while (!fin.eof())
 	{
 		vector<stroka> v; stroka s;
@@ -78,7 +78,7 @@ void sort_it(const string input_name, const string output_name, const short mem_
 		sort(v.begin(), v.end());
 		for (auto i : v)
 		{
-			if (i != "") fout_ << i << endl;
+		fout_ << i << endl;
 		}
 		++k;
 		fout_.close();
@@ -97,7 +97,7 @@ void sort_it(const string input_name, const string output_name, const short mem_
 	{
 		s_i si = pq.top();
 		pq.pop();
-		if (si.s != "") fout << si.s << endl;
+		fout << si.s << endl;
 		if (!(*si.f).eof() && (*si.f >> si.s))
 		{
 			pq.push(si);
